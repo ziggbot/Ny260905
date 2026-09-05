@@ -1,0 +1,24 @@
+# Isplan – träningsplanering för hockeytränare
+
+Testapp i en enda HTML-fil för utvärdering i mobilen. Ingen server, inga beroenden – all data sparas lokalt i webbläsaren (localStorage).
+
+## Testa i mobilen
+
+1. Öppna `index.html` i telefonens webbläsare (skicka filen till dig själv, eller lägg den på valfri webbserver / GitHub Pages).
+2. Lägg gärna till sidan på hemskärmen – den fungerar offline efter första laddningen (typsnitten hämtas från Google Fonts, resten ligger i filen).
+
+Exempeldata (övningar, spelare, två pass) laddas första gången så att allt går att prova direkt. Rensa eller återställ under **Statistik → Inställningar**.
+
+## Funktioner
+
+- **Pass** – skapa pass med datum och istid, bygg upp dem i faserna Uppvärmning → Teknik → Spelövningar → Avslutning. Tidsbudget visar planerad tid mot istid per fas, med riktvärden (15 / 40 / 35 / 10 %). "Anpassa till istid" skalar övningarna så att summan blir exakt istiden. Flytta, ta bort, ändra minuter och lägg anteckning per övning. "Skapa från mall" bygger ett pass automatiskt.
+- **Övningsbank** – egna övningar med fas, standardtid, antal grupper/stationer, redskap, beskrivning och vilka räknare som ska finnas under övningen (t.ex. Skott, Mål).
+- **Spelare** – trupp med position (F/B/MV), närvaro per dag, notering (skada, sjuk t.o.m. …). Gruppindelningen räknas om direkt efter antal närvarande, balanserar forwards/backar och kan blandas om. Varje övning i passet visar hur grupperna blir med dagens antal.
+- **Redskap** – lista över allt som behöver tas fram, sammanställd från passets övningar.
+- **Genomför** – stega igenom passet med nedräkning per övning (vibration när tiden är ute, skärmen hålls tänd om webbläsaren tillåter). Sätt betyg 1–5, räkna skott/mål etc, skriv anteckningar. Verklig tid per övning sparas.
+- **Statistik** – genomförda pass, betyg och planerad/verklig tid per övning, räknarsummor, närvaro per spelare, sammanfattning per pass.
+- **Export/import** – flytta datan mellan enheter som text.
+
+## Filer
+
+- `index.html` – hela appen.

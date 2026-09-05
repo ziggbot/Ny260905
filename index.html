@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Isplan</title>
+<meta name="theme-color" content="#1F4FB3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{
+  --bg:#F3F6F9; --surface:#FFFFFF; --surface2:#E9EEF3; --line:#D6DEE6; --line2:#C2CCD6;
+  --ink:#14202B; --muted:#5B6B7A; --faint:#8A98A6;
+  --accent:#1F4FB3; --accent-ink:#FFFFFF; --accent-soft:#E2EAF9;
+  --warn:#C8322B; --warn-soft:#FBE4E2; --ok:#1E7F4F; --ok-soft:#DDF2E6;
+  --warm:#E0891C; --warm-soft:#FBEBD3;
+  --tech:#1F4FB3; --tech-soft:#DCE5F8;
+  --game:#1E8C5A; --game-soft:#D7F0E2;
+  --cool:#6B4FB3; --cool-soft:#E6DFF6;
+  --shadow:0 10px 30px rgba(20,32,43,.14);
+  --display:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --r:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F161E; --surface:#182230; --surface2:#1F2B3B; --line:#2B3A4C; --line2:#3A4B5F;
+    --ink:#E8EEF4; --muted:#A3B1BF; --faint:#6F7F90;
+    --accent:#6F9BEF; --accent-ink:#0F161E; --accent-soft:#1E3358;
+    --warn:#F0736B; --warn-soft:#4A2320; --ok:#5CCB8F; --ok-soft:#173C2A;
+    --warm:#F0A64A; --warm-soft:#4A3417;
+    --tech:#6F9BEF; --tech-soft:#1E3358;
+    --game:#5CCB8F; --game-soft:#173C2A;
+    --cool:#B29CF0; --cool-soft:#2E2350;
+    --shadow:0 10px 30px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F161E; --surface:#182230; --surface2:#1F2B3B; --line:#2B3A4C; --line2:#3A4B5F;
+  --ink:#E8EEF4; --muted:#A3B1BF; --faint:#6F7F90;
+  --accent:#6F9BEF; --accent-ink:#0F161E; --accent-soft:#1E3358;
+  --warn:#F0736B; --warn-soft:#4A2320; --ok:#5CCB8F; --ok-soft:#173C2A;
+  --warm:#F0A64A; --warm-soft:#4A3417;
+  --tech:#6F9BEF; --tech-soft:#1E3358;
+  --game:#5CCB8F; --game-soft:#173C2A;
+  --cool:#B29CF0; --cool-soft:#2E2350;
+  --shadow:0 10px 30px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+input,select,textarea{background:var(--surface);border:1px solid var(--line2);border-radius:8px;padding:10px 12px;width:100%;min-height:44px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.05}
+h1{font-size:30px;font-weight:700;letter-spacing:.2px}
+h2{font-size:22px;font-weight:600}
+h3{font-size:18px;font-weight:600}
+.num{font-family:var(--display);font-variant-numeric:tabular-nums}
+.label{font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .small{font-size:14px}
+#app{max-width:640px;margin:0 auto;min-height:100%;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.topbar h1{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar .sub{font-size:13px;color:var(--muted);margin-top:2px;font-family:var(--body);font-weight:400;letter-spacing:0}
+.main{padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;background:var(--surface);border:1px solid var(--line2);font-weight:600;font-size:15px;white-space:nowrap}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--warn);border-color:var(--warn)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.sm{min-height:36px;padding:0 12px;font-size:14px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+.icon{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;font-size:20px;line-height:1;background:transparent}
+.icon.sm{width:36px;height:36px;font-size:18px}
+.icon:active{background:var(--surface2)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.row{display:flex;align-items:center;gap:10px}
+.row.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:13px;font-weight:600;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.chip.ph-warm{background:var(--warm-soft);color:var(--warm)} .chip.ph-tech{background:var(--tech-soft);color:var(--tech)} .chip.ph-game{background:var(--game-soft);color:var(--game)} .chip.ph-cool{background:var(--cool-soft);color:var(--cool)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.acc{background:var(--accent-soft);color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;align-items:center;text-align:left;width:100%}
+.item .body{flex:1;min-width:0}
+.item .title{font-weight:600;display:block}
+.item .meta{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.item.tap:active{background:var(--surface2)}
+.stripe{width:4px;align-self:stretch;border-radius:2px;background:var(--line2);flex:none}
+.stripe.warm{background:var(--warm)} .stripe.tech{background:var(--tech)} .stripe.game{background:var(--game)} .stripe.cool{background:var(--cool)}
+/* time budget bar */
+.budget{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--surface2);border:1px solid var(--line)}
+.budget span{display:block;height:100%}
+.budget .warm{background:var(--warm)} .budget .tech{background:var(--tech)} .budget .game{background:var(--game)} .budget .cool{background:var(--cool)} .budget .over{background:repeating-linear-gradient(45deg,var(--warn) 0 4px,transparent 4px 8px)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.legend .warm i{background:var(--warm)} .legend .tech i{background:var(--tech)} .legend .game i{background:var(--game)} .legend .cool i{background:var(--cool)}
+.bignum{font-family:var(--display);font-size:40px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.bignum small{font-size:18px;font-weight:600;color:var(--muted)}
+/* phase section */
+.phase{border-left:4px solid var(--line2);padding-left:12px}
+.phase.warm{border-color:var(--warm)} .phase.tech{border-color:var(--tech)} .phase.game{border-color:var(--game)} .phase.cool{border-color:var(--cool)}
+.phase .head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.drow{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.drow .top{display:flex;align-items:flex-start;gap:8px}
+.drow .name{flex:1;min-width:0;font-weight:600;text-align:left}
+.drow .name .hint{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:8px;overflow:hidden;flex:none}
+.stepper button{width:40px;height:40px;font-size:20px;font-weight:600}
+.stepper button:active{background:var(--surface2)}
+.stepper .val{min-width:56px;text-align:center;font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.stepper .val small{font-size:13px;color:var(--muted);font-family:var(--body);font-weight:400}
+.drow .tools{display:flex;gap:4px;align-items:center;justify-content:space-between}
+.empty{border:1px dashed var(--line2);border-radius:var(--r);padding:16px;text-align:center;color:var(--muted);font-size:14px}
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.nav .inner{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 8px;font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border-top:2px solid transparent}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--accent);border-top-color:var(--accent)}
+/* sheet */
+.backdrop{position:fixed;inset:0;background:rgba(10,18,26,.5);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.sheet .handle{width:40px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 2px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.seg button{flex:1;min-height:40px;font-weight:600;font-size:14px;border-right:1px solid var(--line2)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.sw{width:44px;height:26px;border-radius:13px;background:var(--line2);position:relative;transition:background .15s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.sw.on{background:var(--ok)} .sw.on::after{transform:translateX(18px)}
+/* players */
+.prow{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px 8px 12px}
+.prow.absent{opacity:.55}
+.prow .pos{font-family:var(--display);font-weight:700;width:30px;text-align:center;color:var(--muted)}
+.prow .name{flex:1;min-width:0;font-weight:600}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.group{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.group h3{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.group ul{list-style:none;margin:0;padding:0;font-size:14px}
+.group li{padding:2px 0;display:flex;gap:6px}
+.group li b{font-family:var(--display);color:var(--muted);width:24px;flex:none;font-weight:600}
+.group.gk{grid-column:1/-1}
+/* live */
+.live-timer{text-align:center;padding:10px 0 4px}
+.live-timer .t{font-family:var(--display);font-size:84px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.live-timer .t.over{color:var(--warn)}
+.progress{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.progress span{display:block;height:100%;background:var(--accent);transition:width .5s linear}
+.progress span.over{background:var(--warn)}
+.rating{display:flex;gap:6px}
+.rating button{flex:1;min-height:44px;border:1px solid var(--line2);border-radius:8px;font-family:var(--display);font-size:20px;font-weight:600}
+.rating button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.counters{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.counter{background:var(--surface2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:4px}
+.counter .k{font-size:13px;color:var(--muted);font-weight:600}
+.counter .c{display:flex;align-items:center;justify-content:space-between}
+.counter .c b{font-family:var(--display);font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.counter .c button{width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--line2);font-size:18px;font-weight:600}
+.timeline{display:flex;gap:4px}
+.timeline span{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.timeline span.done{background:var(--ok)} .timeline span.cur{background:var(--accent)}
+/* stats */
+.stat-tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.stat-tile .v{font-family:var(--display);font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.stat-tile .k{font-size:13px;color:var(--muted);margin-top:4px}
+.bar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-family:var(--display);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.banner{background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:10px 12px;font-size:14px;display:flex;gap:10px;align-items:center}
+.banner b{font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;z-index:60;box-shadow:var(--shadow);max-width:90vw}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:25;width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:30px;line-height:1;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="overlay"></div>
+
+<script>
+/* ============================================================
+   Isplan – träningsplanering för hockeytränare
+   All data sparas lokalt i webbläsaren (localStorage).
+   ============================================================ */
+(function(){
+'use strict';
+
+const KEY='isplan.v1';
+const PHASES=[
+  {id:'warm',name:'Uppvärmning',short:'Uppv.',target:.15},
+  {id:'tech',name:'Teknik',short:'Teknik',target:.40},
+  {id:'game',name:'Spelövningar',short:'Spel',target:.35},
+  {id:'cool',name:'Avslutning',short:'Avsl.',target:.10},
+];
+const PH=Object.fromEntries(PHASES.map(p=>[p.id,p]));
+const POS={F:'Forward',B:'Back',MV:'Målvakt'};
+
+/* ---------- helpers ---------- */
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=(sel,root)=>(root||document).querySelector(sel);
+const $$=(sel,root)=>Array.from((root||document).querySelectorAll(sel));
+const sum=(a,f)=>a.reduce((t,x)=>t+(f?f(x):x),0);
+const todayISO=()=>{const d=new Date();return d.toISOString().slice(0,10);};
+const fmtDate=iso=>{if(!iso)return'';const d=new Date(iso+'T12:00:00');return d.toLocaleDateString('sv-SE',{weekday:'short',day:'numeric',month:'short'});};
+const mmss=s=>{s=Math.round(s);const neg=s<0;s=Math.abs(s);return (neg?'−':'')+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+const avg=a=>a.length?sum(a)/a.length:0;
+const r1=x=>Math.round(x*10)/10;
+function splitEven(n,g){const base=Math.floor(n/g),rest=n%g;return Array.from({length:g},(_,i)=>base+(i<rest?1:0));}
+
+/* ---------- seed data (exempel) ---------- */
+function seedDrills(){
+  const d=(name,phase,dur,equip,groups,desc,stats,minP)=>({id:uid(),name,phase,dur,equip,groups,desc,stats:stats||[],minPlayers:minP||0});
+  return [
+    d('Fri åkning med puck','warm',5,['Puckar'],1,'Alla åker fritt i hela rinken med varsin puck. Byt riktning på signal, kör övergångar framåt/bakåt.',[]),
+    d('Skridskoteknik i cirklarna','warm',6,['Koner'],2,'Två grupper på varsin halva. Åk cirklarna med överkorsningar, byt håll på signal. Sista minuten utan puck i hög fart.',[]),
+    d('Passning i par','warm',5,['Puckar'],1,'Par längs sargen, 5–8 m emellan. Forehand, backhand, direktpass. Fokus på mottagning med mjuk blad.',['Tappade pass']),
+    d('Dynamisk uppvärmning på is','warm',4,[],1,'Höga knän, benpendlingar, utfall på skridskor, kort spurt från blå till blå.',[]),
+    d('Stationer: skott – driv – passning','tech',12,['Puckar','Koner','2 mål'],3,'Tre stationer, 4 min per station. 1) Skott från slottet efter mottagning. 2) Driv runt koner och avslut. 3) Passning i triangel med rörelse.',['Skott','Mål']),
+    d('1 mot 1 i hörnet','tech',10,['Puckar','Koner','Mål'],2,'Anfallare får puck från hörnet, back möter från blålinjen. Avslut inom 8 sekunder. Byt roll varje gång.',['Avslut','Mål','Brytningar']),
+    d('Puckkontroll slalom','tech',8,['Koner','Puckar'],2,'Slalombana på vardera halvan. Smal driv, bred driv, fint kroppen. Kör på tid sista varvet.',['Tappade puckar']),
+    d('Skott från slottet','tech',8,['Puckar','Mål'],2,'Kö från vardera hörnet, pass från kanten, direktskott. Mål vakt i varje bur. Handledsskott först, sedan slagskott.',['Skott','Mål']),
+    d('2 mot 0 i rörelse','tech',8,['Puckar','Mål'],2,'Par från mittlinjen, 3 passningar innan avslut. Krav: passning över blålinjen och avslut inom slottet.',['Avslut','Mål']),
+    d('Backhand runt koner','tech',6,['Koner','Puckar'],2,'Konbana där varje kon rundas på backhand. Ögon upp, puck framför kroppen.',[]),
+    d('Smålagsspel 3 mot 3 på tvären','game',12,['Västar','Små mål','Skiljesarg'],4,'Två planer på tvären mellan blålinjerna. 3 mot 3, 45 sek byten, vinnare stannar. Regel: pass före mål.',['Mål']),
+    d('Spel 5 mot 5 med byten','game',15,['Västar'],2,'Fullplan, byte på signal var 45:e sekund. Fokus på tempo i byten och första passningen.',['Mål','Icing/offside']),
+    d('2 mot 1 kontringar','game',10,['Puckar','Västar'],3,'Back spelar ut till två forwards vid blå, en back möter. Avslut på max 10 sek, sedan returlöp.',['Avslut','Mål']),
+    d('Powerplay 5 mot 4','game',10,['Västar','Puckar'],2,'Spel i anfallszon 5 mot 4. Box eller diamant i försvaret, uppspel från halvsarg. 60 sek pass.',['Mål','Skott']),
+    d('Straffar / skottävling','cool',5,['Puckar'],2,'Två köer från mitten, en mot varje målvakt. Lagtävling – vilken kö gör flest mål på 4 minuter?',['Mål']),
+    d('Lugn åkning utan puck','cool',3,[],1,'Fri lugn åkning, långa skär, djupa andetag. Samla ihop puckar och koner.',[]),
+    d('Stretch och genomgång','cool',5,[],1,'Samling vid mitten. Stretcha ljumskar och höfter. Kort feedback: vad gjorde vi bra, vad tar vi med oss?',[]),
+  ];
+}
+function seedPlayers(){
+  const p=(name,pos)=>({id:uid(),name,pos,present:true});
+  return [p('Elsa Berg','F'),p('Hugo Nilsson','F'),p('Alice Lund','F'),p('Liam Karlsson','F'),p('Maja Ek','F'),p('Oscar Persson','F'),p('Noah Sjöberg','F'),p('Ella Hedin','F'),p('William Åberg','F'),
+    p('Vera Holm','B'),p('Lucas Öhman','B'),p('Olivia Strand','B'),p('Elias Wik','B'),p('Astrid Falk','B'),p('Leo Dahl','B'),
+    p('Wilma Sand','MV'),p('Isak Lindqvist','MV')];
+}
+function seedSessions(drills,players){
+  const by=n=>drills.find(d=>d.name===n);
+  const it=(n,dur)=>({id:uid(),drillId:by(n).id,dur:dur||by(n).dur,note:''});
+  const s1={id:uid(),name:'Tisdagsträning – skott och 3 mot 3',date:todayISO(),iceTime:60,groupsCount:2,status:'plan',items:[
+    it('Fri åkning med puck',5),it('Skridskoteknik i cirklarna',5),
+    it('Stationer: skott – driv – passning',12),it('1 mot 1 i hörnet',10),
+    it('Smålagsspel 3 mot 3 på tvären',12),it('2 mot 1 kontringar',10),
+    it('Straffar / skottävling',4),it('Stretch och genomgång',2)],log:{},attendance:[]};
+  const prev=new Date();prev.setDate(prev.getDate()-4);
+  const s2={id:uid(),name:'Lördagsträning – passningsspel',date:prev.toISOString().slice(0,10),iceTime:60,groupsCount:2,status:'done',
+    items:[it('Passning i par',5),it('Dynamisk uppvärmning på is',4),it('2 mot 0 i rörelse',10),it('Skott från slottet',8),it('Spel 5 mot 5 med byten',15),it('Powerplay 5 mot 4',10),it('Lugn åkning utan puck',3),it('Stretch och genomgång',5)],
+    log:{},attendance:players.filter((_,i)=>i!==3&&i!==10).map(p=>p.id),startedAt:Date.now()-4*864e5,finishedAt:Date.now()-4*864e5+62*60e3};
+  const L=(idx,rating,note,actual,counters)=>{s2.log[s2.items[idx].id]={rating,note,actual,counters:counters||{}};};
+  L(0,4,'Bra fokus, några slarviga backhandpass.',5.2,{'Tappade pass':6});
+  L(1,3,'',4);
+  L(2,4,'Bra tempo. Påminn om passning över blå.',11,{'Avslut':38,'Mål':14});
+  L(3,5,'Wilma stod bra. Många snabba avslut.',8.5,{'Skott':61,'Mål':11});
+  L(4,3,'Bytena tog för lång tid, jobba på det.',16,{'Mål':7,'Icing/offside':4});
+  L(5,4,'Diamanten fungerade bättre än boxen.',9,{'Mål':5,'Skott':22});
+  L(6,4,'',3);
+  L(7,5,'Bra samtal om första passningen.',5);
+  return [s1,s2];
+}
+
+/* ---------- state ---------- */
+let S=null;
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);if(S&&S.drills&&S.players&&S.sessions)return;}}catch(e){}
+  S=fresh();save();
+}
+function fresh(){
+  const drills=seedDrills(),players=seedPlayers();
+  return {drills,players,sessions:seedSessions(drills,players),settings:{groupsCount:2,defaultIce:60,seed:1,exampleBanner:true}};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast('Kunde inte spara – lagringen är full eller blockerad.');}}
+
+/* ---------- derived ---------- */
+const drill=id=>S.drills.find(d=>d.id===id);
+const session=id=>S.sessions.find(s=>s.id===id);
+const presentPlayers=()=>S.players.filter(p=>p.present);
+const skaters=()=>presentPlayers().filter(p=>p.pos!=='MV');
+const goalies=()=>presentPlayers().filter(p=>p.pos==='MV');
+function phaseMinutes(s){const m={warm:0,tech:0,game:0,cool:0};s.items.forEach(i=>{const d=drill(i.drillId);if(d)m[d.phase]+=i.dur;});return m;}
+const totalMin=s=>sum(s.items,i=>i.dur);
+function equipmentFor(s){const set=new Set();s.items.forEach(i=>{const d=drill(i.drillId);if(d)d.equip.forEach(e=>set.add(e));});return Array.from(set);}
+function groupsText(g,n){
+  if(g<=1)return 'Helgrupp · '+n+' utespelare';
+  const parts=splitEven(n,g);
+  return g+' grupper · '+parts.join('–')+' spelare';
+}
+/* balanced split: deal each position round-robin so every group has similar F/B mix */
+function buildGroups(g,seed){
+  const rnd=mulberry(seed||1);
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+  const groups=Array.from({length:g},()=>[]);
+  let k=0;
+  ['F','B'].forEach(pos=>{shuffle(skaters().filter(p=>p.pos===pos)).forEach(p=>{groups[k%g].push(p);k++;});});
+  const gk=shuffle(goalies());
+  return {groups,goalies:gk};
+}
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+/* ---------- routing ---------- */
+let view={name:'sessions'};
+function go(name,params){view=Object.assign({name},params||{});if(name!=='live')stopLive();window.scrollTo(0,0);render();}
+
+/* ---------- toast ---------- */
+let toastT=null;
+function toast(msg){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t);}t.textContent=msg;clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),2200);}
+
+/* ---------- sheet (bottom modal) ---------- */
+function openSheet(html,onMount){
+  const o=$('#overlay');
+  o.innerHTML='<div class="backdrop"><div class="sheet" role="dialog" aria-modal="true"><div class="handle"></div>'+html+'</div></div>';
+  $('.backdrop',o).addEventListener('click',e=>{if(e.target.classList.contains('backdrop'))closeSheet();});
+  document.body.style.overflow='hidden';
+  if(onMount)onMount($('.sheet',o));
+}
+function closeSheet(){$('#overlay').innerHTML='';document.body.style.overflow='';}
+
+/* ---------- render ---------- */
+function render(){
+  const app=$('#app');
+  const v=view.name;
+  let html='';
+  if(v==='sessions')html=viewSessions();
+  else if(v==='session')html=viewSession(session(view.id));
+  else if(v==='live')html=viewLive(session(view.id));
+  else if(v==='drills')html=viewDrills();
+  else if(v==='players')html=viewPlayers();
+  else if(v==='stats')html=viewStats();
+  app.innerHTML=html+(v==='live'?'':nav());
+  bind(app);
+}
+function topbar(title,sub,left,right){
+  return '<header class="topbar">'+(left||'')+'<div style="flex:1;min-width:0"><h1>'+h(title)+'</h1>'+(sub?'<div class="sub">'+sub+'</div>':'')+'</div>'+(right||'')+'</header>';
+}
+const backBtn=(name,params)=>'<button class="icon" data-go="'+name+'" '+(params?'data-id="'+params+'"':'')+' aria-label="Tillbaka">‹</button>';
+function nav(){
+  const tabs=[
+    ['sessions','Pass','<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>'],
+    ['drills','Övningar','<svg viewBox="0 0 24 24"><path d="M4 18 18 4M14 4h4v4M9 13l2 2"/><circle cx="7" cy="17" r="2"/></svg>'],
+    ['players','Spelare','<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4a3.5 3.5 0 0 1 0 7M17 13.5a6.5 6.5 0 0 1 4.5 6.5"/></svg>'],
+    ['stats','Statistik','<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'],
+  ];
+  const cur=view.name==='session'||view.name==='live'?'sessions':view.name;
+  return '<nav class="nav"><div class="inner">'+tabs.map(t=>'<button class="tab'+(cur===t[0]?' on':'')+'" data-go="'+t[0]+'">'+t[2]+'<span>'+t[1]+'</span></button>').join('')+'</div></nav>';
+}
+
+/* ---------- VIEW: sessions ---------- */
+function viewSessions(){
+  const list=S.sessions.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const n=presentPlayers().length;
+  return topbar('Träningspass',fmtDate(todayISO())+' · '+n+' närvarande')+
+  '<div class="main">'+
+  (S.settings.exampleBanner?'<div class="banner"><span><b>Exempeldata laddad.</b> Övningar, spelare och två pass är påhittade så att du kan testa direkt. Rensa under Statistik → Inställningar.</span><button class="icon sm" data-act="hideBanner" aria-label="Stäng">×</button></div>':'')+
+  '<div class="grid2"><button class="btn primary" data-act="newSession">+ Nytt pass</button><button class="btn" data-act="newFromTemplate">Skapa från mall</button></div>'+
+  (list.length?'<div class="list">'+list.map(s=>{
+    const tot=totalMin(s),over=tot>s.iceTime;
+    return '<button class="item tap" data-go="session" data-id="'+s.id+'"><div class="stripe '+(s.status==='done'?'':'tech')+'"></div><div class="body"><span class="title">'+h(s.name)+'</span><div class="meta"><span>'+fmtDate(s.date)+'</span><span>'+s.items.length+' övningar</span><span class="num">'+tot+'/'+s.iceTime+' min</span>'+(s.status==='done'?'<span class="chip ok">Genomfört</span>':over?'<span class="chip warn">+'+(tot-s.iceTime)+' min över</span>':'')+'</div></div><span class="muted">›</span></button>';
+  }).join('')+'</div>':'<div class="empty">Inga pass ännu. Skapa ett nytt eller använd en mall.</div>')+
+  '</div>';
+}
+
+/* ---------- VIEW: session plan ---------- */
+function viewSession(s){
+  if(!s)return viewSessions();
+  const pm=phaseMinutes(s),tot=totalMin(s),ice=s.iceTime,over=Math.max(0,tot-ice),left=ice-tot;
+  const scale=Math.max(ice,tot);
+  const n=skaters().length,gk=goalies().length;
+  const equip=equipmentFor(s);
+  const done=s.status==='done';
+  let html=topbar(s.name,fmtDate(s.date)+' · istid '+ice+' min',backBtn('sessions'),'<button class="icon" data-act="editSession" aria-label="Redigera pass">✎</button>');
+  html+='<div class="main">';
+  // budget
+  html+='<section class="card stack"><div class="row between"><div><div class="label">Planerad tid</div><div class="bignum">'+tot+'<small> / '+ice+' min</small></div></div><div style="text-align:right">'+
+    (left>0?'<span class="chip acc">'+left+' min kvar att fylla</span>':left===0?'<span class="chip ok">Passet är fullt</span>':'<span class="chip warn">'+over+' min över istiden</span>')+
+    '</div></div>'+
+    '<div class="budget" aria-label="Tidsfördelning">'+PHASES.map(p=>'<span class="'+p.id+'" style="width:'+(pm[p.id]/scale*100)+'%"></span>').join('')+(over?'<span class="over" style="width:'+(over/scale*100)+'%"></span>':'')+'</div>'+
+    '<div class="legend">'+PHASES.map(p=>'<span class="'+p.id+'"><i></i>'+p.short+' <b class="num">'+pm[p.id]+'</b> <span class="muted">('+Math.round(p.target*100)+'% ≈ '+Math.round(p.target*ice)+')</span></span>').join('')+'</div>'+
+    (done?'':'<div class="row" style="flex-wrap:wrap"><button class="btn sm" data-act="fitTime" '+(tot===0?'disabled':'')+'>Anpassa till istid</button><button class="btn sm" data-act="editSession">Ändra istid</button></div>')+
+    '</section>';
+  // phases
+  PHASES.forEach(p=>{
+    const items=s.items.map((it,idx)=>({it,idx,d:drill(it.drillId)})).filter(x=>x.d&&x.d.phase===p.id);
+    html+='<section class="phase '+p.id+'"><div class="head"><h2>'+p.name+'</h2><span class="num muted">'+pm[p.id]+' min</span></div><div class="stack">';
+    items.forEach(({it,idx,d})=>{
+      const g=d.groups||1;
+      html+='<div class="drow"><div class="top"><button class="name" data-act="drillInfo" data-id="'+d.id+'">'+h(d.name)+'<span class="hint">'+groupsText(g,n)+(d.equip.length?' · '+h(d.equip.join(', ')):'')+'</span></button>'+
+        (done?'<span class="num" style="font-size:20px;font-weight:600">'+it.dur+'<span class="muted small"> min</span></span>':'<div class="stepper"><button data-act="dur" data-idx="'+idx+'" data-d="-1" aria-label="Minska">−</button><span class="val">'+it.dur+'<small> min</small></span><button data-act="dur" data-idx="'+idx+'" data-d="1" aria-label="Öka">+</button></div>')+
+        '</div>'+
+        (it.note?'<div class="small muted">Anteckning: '+h(it.note)+'</div>':'')+
+        (done?'':'<div class="tools"><div class="row" style="gap:2px"><button class="icon sm" data-act="move" data-idx="'+idx+'" data-d="-1" aria-label="Flytta upp">↑</button><button class="icon sm" data-act="move" data-idx="'+idx+'" data-d="1" aria-label="Flytta ned">↓</button><button class="icon sm" data-act="itemNote" data-idx="'+idx+'" aria-label="Anteckning">✎</button></div><button class="icon sm" data-act="removeItem" data-idx="'+idx+'" aria-label="Ta bort" style="color:var(--warn)">×</button></div>')+
+        '</div>';
+    });
+    if(!items.length)html+='<div class="empty">Ingen '+p.name.toLowerCase()+' inlagd.</div>';
+    if(!done)html+='<button class="btn sm" data-act="addDrill" data-phase="'+p.id+'">+ Lägg till '+p.name.toLowerCase()+'</button>';
+    html+='</div></section>';
+  });
+  // groups + equipment
+  html+='<section class="card stack"><div class="row between"><h2>Deltagare i dag</h2><button class="btn sm" data-go="players">Ändra närvaro</button></div>'+
+    '<div class="row" style="gap:16px"><div><div class="bignum">'+n+'</div><div class="small muted">utespelare</div></div><div><div class="bignum">'+gk+'</div><div class="small muted">målvakt'+(gk===1?'':'er')+'</div></div><div style="flex:1"></div>'+
+    '<div class="field" style="width:130px"><label>Gruppindelning</label><div class="stepper"><button data-act="groupsCount" data-d="-1" aria-label="Färre grupper">−</button><span class="val">'+(s.groupsCount||2)+'</span><button data-act="groupsCount" data-d="1" aria-label="Fler grupper">+</button></div></div></div>'+
+    renderGroups(s.groupsCount||2,S.settings.seed)+
+    '<button class="btn sm" data-act="reshuffle">Blanda om grupperna</button></section>';
+  html+='<section class="card stack"><h2>Redskap att ta fram</h2>'+(equip.length?'<div class="chips">'+equip.map(e=>'<span class="chip">'+h(e)+'</span>').join('')+'</div>':'<div class="muted small">Inga redskap behövs utöver puckar och spelarnas egna.</div>')+'</section>';
+  // actions
+  if(done){
+    html+='<section class="stack"><button class="btn primary block" data-act="viewLog">Visa anteckningar och statistik</button><button class="btn block" data-act="reopen">Öppna passet igen</button><button class="btn block" data-act="duplicate">Kopiera till nytt pass</button><button class="btn danger block" data-act="deleteSession">Ta bort pass</button></section>';
+  }else{
+    html+='<section class="stack"><button class="btn primary block" data-act="startLive" '+(s.items.length?'':'disabled')+'>▶ Starta träningen</button><button class="btn block" data-act="duplicate">Kopiera till nytt pass</button><button class="btn danger block" data-act="deleteSession">Ta bort pass</button></section>';
+  }
+  html+='</div>';
+  return html;
+}
+function renderGroups(g,seed){
+  const {groups,goalies:gk}=buildGroups(g,seed);
+  if(!skaters().length)return '<div class="empty">Inga närvarande utespelare.</div>';
+  return '<div class="groups">'+groups.map((gr,i)=>'<div class="group"><h3>Grupp '+(i+1)+'<span class="muted num small">'+gr.length+' st</span></h3><ul>'+gr.map(p=>'<li><b>'+p.pos+'</b>'+h(p.name)+'</li>').join('')+'</ul></div>').join('')+
+    '<div class="group gk"><h3>Målvakter<span class="muted num small">'+gk.length+' st</span></h3><ul>'+(gk.length?gk.map((p,i)=>'<li><b>MV</b>'+h(p.name)+(gk.length>1&&g>1?' <span class="muted">· grupp '+((i%g)+1)+'</span>':'')+'</li>').join(''):'<li class="muted">Ingen målvakt – kör med tomma mål eller små mål.</li>')+'</ul></div></div>';
+}
+
+/* ---------- VIEW: live ---------- */
+let live={timer:null,idx:0,running:false,startedAt:0,elapsedBefore:0,wake:null};
+function stopLive(){if(live.timer){clearInterval(live.timer);live.timer=null;}live.running=false;if(live.wake){try{live.wake.release();}catch(e){}live.wake=null;}}
+function ensureLog(s,it){if(!s.log)s.log={};if(!s.log[it.id])s.log[it.id]={rating:0,note:'',actual:0,counters:{}};return s.log[it.id];}
+function viewLive(s){
+  if(!s)return viewSessions();
+  if(live.idx>=s.items.length)live.idx=s.items.length-1;
+  const it=s.items[live.idx],d=drill(it.drillId),lg=ensureLog(s,it);
+  const n=skaters().length;
+  const planned=it.dur*60;
+  const el=liveElapsed(lg);
+  const remain=planned-el;
+  let html=topbar('Pågår: '+s.name,'Övning '+(live.idx+1)+' av '+s.items.length+' · '+mmss(sum(s.items,x=>x.dur)*60-liveTotalElapsed(s))+' kvar av passet',
+    '<button class="icon" data-act="exitLive" aria-label="Avbryt">‹</button>','<button class="btn sm primary" data-act="finish">Avsluta</button>');
+  html+='<div class="main">';
+  html+='<div class="timeline">'+s.items.map((x,i)=>'<span class="'+(i<live.idx?'done':i===live.idx?'cur':'')+'"></span>').join('')+'</div>';
+  html+='<section class="card stack"><div class="row between"><span class="chip ph-'+d.phase+'">'+PH[d.phase].name+'</span><span class="muted small">'+groupsText(d.groups||1,n)+'</span></div>'+
+    '<h2 style="font-size:26px">'+h(d.name)+'</h2>'+(d.desc?'<p class="small muted" style="margin:0">'+h(d.desc)+'</p>':'')+(it.note?'<p class="small" style="margin:0"><b>Anteckning:</b> '+h(it.note)+'</p>':'')+
+    '<div class="live-timer"><div class="t'+(remain<0?' over':'')+'" id="lt">'+mmss(remain)+'</div><div class="muted small">av '+it.dur+' min planerat</div></div>'+
+    '<div class="progress"><span id="lp" class="'+(remain<0?'over':'')+'" style="width:'+Math.min(100,el/planned*100)+'%"></span></div>'+
+    '<div class="grid2"><button class="btn" data-act="prev" '+(live.idx===0?'disabled':'')+'>‹ Föregående</button><button class="btn primary" data-act="toggle" id="lb">'+(live.running?'Pausa':el>0?'Fortsätt':'Starta')+'</button></div>'+
+    '<button class="btn block" data-act="next">'+(live.idx===s.items.length-1?'Klar med sista övningen':'Nästa övning ›')+'</button>'+
+    '</section>';
+  html+='<section class="card stack"><h3>Hur gick övningen?</h3><div class="rating">'+[1,2,3,4,5].map(r=>'<button class="'+(lg.rating===r?'on':'')+'" data-act="rate" data-r="'+r+'">'+r+'</button>').join('')+'</div>'+
+    (d.stats.length?'<div class="counters">'+d.stats.map(k=>'<div class="counter"><span class="k">'+h(k)+'</span><div class="c"><button data-act="cnt" data-k="'+h(k)+'" data-d="-1" aria-label="Minska">−</button><b>'+(lg.counters[k]||0)+'</b><button data-act="cnt" data-k="'+h(k)+'" data-d="1" aria-label="Öka">+</button></div></div>').join('')+'</div>':'')+
+    '<div class="field"><label>Anteckning under övningen</label><textarea id="ln" placeholder="T.ex. vem som utmärkte sig, vad som behöver mer tid…">'+h(lg.note)+'</textarea></div></section>';
+  html+='</div>';
+  return html;
+}
+function liveElapsed(lg){return lg.actualSec+(live.running?(Date.now()-live.startedAt)/1000:0);}
+function liveTotalElapsed(s){return sum(s.items,it=>{const lg=s.log&&s.log[it.id];if(!lg)return 0;return (lg.actualSec||0)+(live.running&&it===s.items[live.idx]?(Date.now()-live.startedAt)/1000:0);});}
+function liveTick(){
+  const s=session(view.id);if(!s)return;
+  const it=s.items[live.idx],lg=ensureLog(s,it);
+  const planned=it.dur*60,el=liveElapsed(lg),remain=planned-el;
+  const t=$('#lt'),p=$('#lp');if(!t)return;
+  t.textContent=mmss(remain);t.classList.toggle('over',remain<0);
+  p.style.width=Math.min(100,el/planned*100)+'%';p.classList.toggle('over',remain<0);
+  if(Math.abs(remain)<0.6&&remain>=0&&navigator.vibrate){try{navigator.vibrate([200,100,200]);}catch(e){}}
+}
+function liveStart(s){
+  const lg=ensureLog(s,s.items[live.idx]);if(lg.actualSec==null)lg.actualSec=0;
+  live.running=true;live.startedAt=Date.now();
+  if(!live.timer)live.timer=setInterval(liveTick,500);
+  if(navigator.wakeLock&&!live.wake){navigator.wakeLock.request('screen').then(w=>{live.wake=w;}).catch(()=>{});}
+}
+function livePause(s){
+  if(!live.running)return;
+  const lg=ensureLog(s,s.items[live.idx]);
+  lg.actualSec=(lg.actualSec||0)+(Date.now()-live.startedAt)/1000;lg.actual=r1(lg.actualSec/60);
+  live.running=false;save();
+}
+
+/* ---------- VIEW: drills ---------- */
+let drillFilter='all';
+function viewDrills(){
+  const list=S.drills.filter(d=>drillFilter==='all'||d.phase===drillFilter);
+  return topbar('Övningsbank',S.drills.length+' övningar')+
+  '<div class="main"><div class="seg"><button class="'+(drillFilter==='all'?'on':'')+'" data-act="filter" data-f="all">Alla</button>'+PHASES.map(p=>'<button class="'+(drillFilter===p.id?'on':'')+'" data-act="filter" data-f="'+p.id+'">'+p.short+'</button>').join('')+'</div>'+
+  '<div class="list">'+list.map(d=>'<button class="item tap" data-act="editDrill" data-id="'+d.id+'"><div class="stripe '+d.phase+'"></div><div class="body"><span class="title">'+h(d.name)+'</span><div class="meta"><span class="num">'+d.dur+' min</span><span>'+(d.groups>1?d.groups+' grupper':'helgrupp')+'</span>'+(d.equip.length?'<span>'+h(d.equip.join(', '))+'</span>':'')+'</div></div><span class="muted">›</span></button>').join('')+'</div>'+
+  '</div><button class="fab" data-act="newDrill" aria-label="Ny övning">+</button>';
+}
+
+/* ---------- VIEW: players ---------- */
+function viewPlayers(){
+  const n=presentPlayers().length,tot=S.players.length;
+  const order={F:0,B:1,MV:2};
+  const list=S.players.slice().sort((a,b)=>order[a.pos]-order[b.pos]||a.name.localeCompare(b.name,'sv'));
+  return topbar('Spelare',n+' av '+tot+' närvarande i dag')+
+  '<div class="main">'+
+  '<div class="row" style="flex-wrap:wrap"><button class="btn sm" data-act="allPresent">Alla närvarande</button><button class="btn sm" data-act="nonePresent">Ingen närvarande</button></div>'+
+  '<div class="row" style="gap:16px"><div><div class="bignum">'+skaters().length+'</div><div class="small muted">utespelare</div></div><div><div class="bignum">'+goalies().length+'</div><div class="small muted">målvakter</div></div><div><div class="bignum">'+S.players.filter(p=>!p.present).length+'</div><div class="small muted">frånvarande</div></div></div>'+
+  '<div class="list">'+list.map(p=>'<div class="prow'+(p.present?'':' absent')+'"><span class="pos">'+p.pos+'</span><button class="name" style="text-align:left" data-act="editPlayer" data-id="'+p.id+'">'+h(p.name)+(p.note?'<span class="small muted" style="font-weight:400"> · '+h(p.note)+'</span>':'')+'</button><label class="toggle"><span class="small muted">'+(p.present?'Här':'Borta')+'</span><button class="sw'+(p.present?' on':'')+'" data-act="present" data-id="'+p.id+'" role="switch" aria-checked="'+p.present+'" aria-label="Närvaro '+h(p.name)+'"></button></label></div>').join('')+'</div>'+
+  '<section class="card stack"><div class="row between"><h2>Gruppförslag</h2><div class="stepper"><button data-act="gc2" data-d="-1" aria-label="Färre">−</button><span class="val">'+S.settings.groupsCount+'</span><button data-act="gc2" data-d="1" aria-label="Fler">+</button></div></div>'+renderGroups(S.settings.groupsCount,S.settings.seed)+'<button class="btn sm" data-act="reshuffle">Blanda om</button></section>'+
+  '</div><button class="fab" data-act="newPlayer" aria-label="Ny spelare">+</button>';
+}
+
+/* ---------- VIEW: stats ---------- */
+function viewStats(){
+  const done=S.sessions.filter(s=>s.status==='done');
+  // per drill aggregates
+  const agg={};
+  done.forEach(s=>s.items.forEach(it=>{const lg=s.log&&s.log[it.id];if(!lg)return;const a=agg[it.drillId]||(agg[it.drillId]={runs:0,ratings:[],planned:0,actual:0,counters:{}});a.runs++;if(lg.rating)a.ratings.push(lg.rating);a.planned+=it.dur;a.actual+=lg.actual||0;Object.entries(lg.counters||{}).forEach(([k,v])=>{a.counters[k]=(a.counters[k]||0)+v;});}));
+  const rows=Object.entries(agg).map(([id,a])=>({d:drill(id),a})).filter(x=>x.d).sort((x,y)=>avg(y.a.ratings)-avg(x.a.ratings));
+  const allRatings=rows.flatMap(x=>x.a.ratings);
+  const iceTot=sum(done,s=>s.iceTime);
+  // attendance
+  const att=S.players.map(p=>({p,n:done.filter(s=>(s.attendance||[]).includes(p.id)).length})).sort((a,b)=>b.n-a.n||a.p.name.localeCompare(b.p.name,'sv'));
+  let html=topbar('Statistik',done.length+' genomförda pass');
+  html+='<div class="main">';
+  html+='<div class="grid2"><div class="stat-tile"><div class="v">'+done.length+'</div><div class="k">genomförda pass</div></div><div class="stat-tile"><div class="v">'+iceTot+'</div><div class="k">min istid totalt</div></div><div class="stat-tile"><div class="v">'+(allRatings.length?r1(avg(allRatings)).toLocaleString('sv-SE'):'–')+'</div><div class="k">snittbetyg på övningar</div></div><div class="stat-tile"><div class="v">'+(done.length?Math.round(avg(done.map(s=>(s.attendance||[]).length))):'–')+'</div><div class="k">snitt närvarande</div></div></div>';
+  html+='<section class="card stack"><h2>Övningar som fungerar</h2>'+(rows.length?'<div class="scroll"><table><thead><tr><th>Övning</th><th class="n">Ggr</th><th class="n">Betyg</th><th class="n">Plan/verklig</th></tr></thead><tbody>'+rows.map(({d,a})=>'<tr><td><button style="text-align:left;font-weight:600" data-act="drillStats" data-id="'+d.id+'">'+h(d.name)+'</button><div class="bar" style="margin-top:4px;max-width:120px"><span style="width:'+(avg(a.ratings)/5*100)+'%"></span></div></td><td class="n">'+a.runs+'</td><td class="n">'+(a.ratings.length?r1(avg(a.ratings)).toLocaleString('sv-SE'):'–')+'</td><td class="n">'+a.planned+' / '+Math.round(a.actual)+' min</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">Genomför ett pass så samlas betyg, tider och räknare här.</div>')+'</section>';
+  html+='<section class="card stack"><h2>Genomförda pass</h2>'+(done.length?'<div class="list">'+done.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(s=>{const rs=s.items.map(it=>s.log&&s.log[it.id]&&s.log[it.id].rating).filter(Boolean);return '<button class="item tap" data-act="viewLogOf" data-id="'+s.id+'"><div class="stripe"></div><div class="body"><span class="title">'+h(s.name)+'</span><div class="meta"><span>'+fmtDate(s.date)+'</span><span>'+(s.attendance||[]).length+' närvarande</span><span>betyg '+(rs.length?r1(avg(rs)).toLocaleString('sv-SE'):'–')+'</span></div></div><span class="muted">›</span></button>';}).join('')+'</div>':'<div class="empty">Inga genomförda pass ännu.</div>')+'</section>';
+  html+='<section class="card stack"><h2>Närvaro</h2><div class="scroll"><table><thead><tr><th>Spelare</th><th class="n">Pass</th><th style="width:40%"></th></tr></thead><tbody>'+att.map(({p,n})=>'<tr><td><b>'+p.pos+'</b> '+h(p.name)+'</td><td class="n">'+n+'/'+done.length+'</td><td><div class="bar"><span style="width:'+(done.length?n/done.length*100:0)+'%"></span></div></td></tr>').join('')+'</tbody></table></div></section>';
+  html+='<section class="card stack"><h2>Inställningar</h2><div class="field"><label>Standard istid för nya pass (min)</label><input type="number" inputmode="numeric" id="defIce" value="'+S.settings.defaultIce+'" min="15" max="180"></div>'+
+    '<div class="grid2"><button class="btn" data-act="export">Exportera data</button><button class="btn" data-act="import">Importera data</button></div>'+
+    '<div class="grid2"><button class="btn" data-act="resetSeed">Återställ exempeldata</button><button class="btn danger" data-act="wipe">Rensa allt</button></div>'+
+    '<p class="small muted" style="margin:0">Allt sparas lokalt i den här webbläsaren. Exportera om du vill flytta datan till en annan enhet.</p></section>';
+  html+='</div>';
+  return html;
+}
+
+/* ---------- sheets ---------- */
+function sheetSession(s){
+  const isNew=!s;
+  const v=s||{name:'',date:todayISO(),iceTime:S.settings.defaultIce,groupsCount:S.settings.groupsCount};
+  openSheet('<h2>'+(isNew?'Nytt pass':'Redigera pass')+'</h2>'+
+    '<div class="field"><label>Namn</label><input id="f-name" value="'+h(v.name)+'" placeholder="T.ex. Torsdag – teknik och spel"></div>'+
+    '<div class="grid2"><div class="field"><label>Datum</label><input type="date" id="f-date" value="'+v.date+'"></div><div class="field"><label>Istid (min)</label><input type="number" inputmode="numeric" id="f-ice" value="'+v.iceTime+'" min="10" max="180"></div></div>'+
+    '<div class="grid2"><button class="btn" data-act="closeSheet">Avbryt</button><button class="btn primary" id="f-save">Spara</button></div>',
+    sh=>{$('#f-name',sh).focus();$('#f-save',sh).onclick=()=>{
+      const name=$('#f-name',sh).value.trim()||'Träningspass';const date=$('#f-date',sh).value||todayISO();const ice=Math.max(10,parseInt($('#f-ice',sh).value)||60);
+      if(isNew){const ns={id:uid(),name,date,iceTime:ice,groupsCount:S.settings.groupsCount,status:'plan',items:[],log:{},attendance:[]};S.sessions.push(ns);save();closeSheet();go('session',{id:ns.id});}
+      else{s.name=name;s.date=date;s.iceTime=ice;save();closeSheet();render();}
+    };});
+}
+function sheetAddDrill(s,phase){
+  const list=S.drills.filter(d=>d.phase===phase);
+  const used=new Set(s.items.map(i=>i.drillId));
+  openSheet('<h2>Lägg till '+PH[phase].name.toLowerCase()+'</h2><div class="list">'+list.map(d=>'<button class="item tap" data-pick="'+d.id+'"><div class="stripe '+d.phase+'"></div><div class="body"><span class="title">'+h(d.name)+'</span><div class="meta"><span class="num">'+d.dur+' min</span><span>'+(d.groups>1?d.groups+' grupper':'helgrupp')+'</span>'+(used.has(d.id)?'<span class="chip">Redan i passet</span>':'')+'</div></div><span class="muted">+</span></button>').join('')+'</div>'+
+    (list.length?'':'<div class="empty">Inga övningar i den här fasen. Skapa en i övningsbanken.</div>')+
+    '<button class="btn" data-act="closeSheet">Stäng</button>',
+    sh=>{$$('[data-pick]',sh).forEach(b=>b.onclick=()=>{const d=drill(b.dataset.pick);s.items.push({id:uid(),drillId:d.id,dur:d.dur,note:''});save();closeSheet();render();toast(d.name+' tillagd');});});
+}
+function sheetDrill(d){
+  const isNew=!d;
+  const v=d||{name:'',phase:'tech',dur:8,equip:[],groups:1,desc:'',stats:[],minPlayers:0};
+  openSheet('<h2>'+(isNew?'Ny övning':'Redigera övning')+'</h2>'+
+    '<div class="field"><label>Namn</label><input id="d-name" value="'+h(v.name)+'"></div>'+
+    '<div class="field"><label>Fas</label><div class="seg" id="d-phase">'+PHASES.map(p=>'<button type="button" data-p="'+p.id+'" class="'+(v.phase===p.id?'on':'')+'">'+p.short+'</button>').join('')+'</div></div>'+
+    '<div class="grid2"><div class="field"><label>Standardtid (min)</label><input type="number" inputmode="numeric" id="d-dur" value="'+v.dur+'" min="1" max="60"></div><div class="field"><label>Antal grupper</label><select id="d-groups">'+[1,2,3,4,5,6].map(g=>'<option value="'+g+'" '+(v.groups===g?'selected':'')+'>'+(g===1?'Helgrupp':g+' grupper/stationer')+'</option>').join('')+'</select></div></div>'+
+    '<div class="field"><label>Redskap (kommaseparerat)</label><input id="d-equip" value="'+h(v.equip.join(', '))+'" placeholder="Puckar, Koner, Västar, Små mål"></div>'+
+    '<div class="field"><label>Räknare under övningen (kommaseparerat)</label><input id="d-stats" value="'+h(v.stats.join(', '))+'" placeholder="Skott, Mål, Tappade puckar"></div>'+
+    '<div class="field"><label>Beskrivning / instruktion</label><textarea id="d-desc">'+h(v.desc)+'</textarea></div>'+
+    '<div class="grid2"><button class="btn" data-act="closeSheet">Avbryt</button><button class="btn primary" id="d-save">Spara</button></div>'+
+    (isNew?'':'<button class="btn danger block" id="d-del">Ta bort övning</button>'),
+    sh=>{
+      let phase=v.phase;
+      $$('#d-phase button',sh).forEach(b=>b.onclick=()=>{phase=b.dataset.p;$$('#d-phase button',sh).forEach(x=>x.classList.toggle('on',x===b));});
+      const csv=id=>$(id,sh).value.split(',').map(x=>x.trim()).filter(Boolean);
+      $('#d-save',sh).onclick=()=>{
+        const name=$('#d-name',sh).value.trim();if(!name){toast('Ge övningen ett namn.');return;}
+        const o={name,phase,dur:Math.max(1,parseInt($('#d-dur',sh).value)||5),groups:parseInt($('#d-groups',sh).value)||1,equip:csv('#d-equip'),stats:csv('#d-stats'),desc:$('#d-desc',sh).value.trim()};
+        if(isNew){S.drills.push(Object.assign({id:uid(),minPlayers:0},o));}else Object.assign(d,o);
+        save();closeSheet();render();toast('Övning sparad');
+      };
+      if(!isNew)$('#d-del',sh).onclick=()=>{
+        const inUse=S.sessions.filter(s=>s.items.some(i=>i.drillId===d.id)).length;
+        if(!confirm('Ta bort "'+d.name+'"?'+(inUse?' Den används i '+inUse+' pass och tas bort därifrån också.':'')))return;
+        S.sessions.forEach(s=>{s.items=s.items.filter(i=>i.drillId!==d.id);});S.drills=S.drills.filter(x=>x.id!==d.id);save();closeSheet();render();
+      };
+    });
+}
+function sheetDrillInfo(d){
+  openSheet('<span class="chip ph-'+d.phase+'">'+PH[d.phase].name+'</span><h2>'+h(d.name)+'</h2><p style="margin:0">'+h(d.desc||'Ingen beskrivning.')+'</p>'+
+    '<div class="chips">'+d.equip.map(e=>'<span class="chip">'+h(e)+'</span>').join('')+'<span class="chip acc">'+(d.groups>1?d.groups+' grupper':'helgrupp')+'</span><span class="chip acc">'+d.dur+' min standard</span></div>'+
+    '<div class="grid2"><button class="btn" data-act="closeSheet">Stäng</button><button class="btn" id="i-edit">Redigera</button></div>',
+    sh=>{$('#i-edit',sh).onclick=()=>{closeSheet();sheetDrill(d);};});
+}
+function sheetPlayer(p){
+  const isNew=!p;const v=p||{name:'',pos:'F',present:true,note:''};
+  openSheet('<h2>'+(isNew?'Ny spelare':'Redigera spelare')+'</h2>'+
+    '<div class="field"><label>Namn</label><input id="p-name" value="'+h(v.name)+'"></div>'+
+    '<div class="field"><label>Position</label><div class="seg" id="p-pos">'+Object.entries(POS).map(([k,n])=>'<button type="button" data-p="'+k+'" class="'+(v.pos===k?'on':'')+'">'+n+'</button>').join('')+'</div></div>'+
+    '<div class="field"><label>Notering (skada, nivå, sjuk t.o.m.…)</label><input id="p-note" value="'+h(v.note||'')+'"></div>'+
+    '<div class="grid2"><button class="btn" data-act="closeSheet">Avbryt</button><button class="btn primary" id="p-save">Spara</button></div>'+(isNew?'':'<button class="btn danger block" id="p-del">Ta bort spelare</button>'),
+    sh=>{let pos=v.pos;$$('#p-pos button',sh).forEach(b=>b.onclick=()=>{pos=b.dataset.p;$$('#p-pos button',sh).forEach(x=>x.classList.toggle('on',x===b));});
+      $('#p-name',sh).focus();
+      $('#p-save',sh).onclick=()=>{const name=$('#p-name',sh).value.trim();if(!name){toast('Ange ett namn.');return;}const note=$('#p-note',sh).value.trim();
+        if(isNew)S.players.push({id:uid(),name,pos,present:true,note});else Object.assign(p,{name,pos,note});save();closeSheet();render();};
+      if(!isNew)$('#p-del',sh).onclick=()=>{if(!confirm('Ta bort '+p.name+'?'))return;S.players=S.players.filter(x=>x.id!==p.id);save();closeSheet();render();};
+    });
+}
+function sheetItemNote(s,idx){
+  const it=s.items[idx];
+  openSheet('<h2>Anteckning till övningen</h2><p class="muted small" style="margin:0">'+h(drill(it.drillId).name)+' – syns i planen och under genomförandet.</p><textarea id="n-txt" placeholder="T.ex. kör med 4 koner i stället för 6, extra fokus på bakåtåkning">'+h(it.note||'')+'</textarea><div class="grid2"><button class="btn" data-act="closeSheet">Avbryt</button><button class="btn primary" id="n-save">Spara</button></div>',
+    sh=>{$('#n-txt',sh).focus();$('#n-save',sh).onclick=()=>{it.note=$('#n-txt',sh).value.trim();save();closeSheet();render();};});
+}
+function sheetLog(s){
+  const rows=s.items.map(it=>{const d=drill(it.drillId),lg=s.log&&s.log[it.id];return '<div class="drow"><div class="top"><div class="name">'+(d?h(d.name):'Borttagen övning')+'<span class="hint">'+it.dur+' min planerat'+(lg&&lg.actual?' · '+lg.actual.toLocaleString('sv-SE')+' min verklig':'')+'</span></div><span class="num" style="font-size:22px;font-weight:700">'+(lg&&lg.rating?lg.rating+'<span class="muted small">/5</span>':'–')+'</span></div>'+
+    (lg&&Object.keys(lg.counters||{}).length?'<div class="chips">'+Object.entries(lg.counters).map(([k,v])=>'<span class="chip">'+h(k)+' <b>'+v+'</b></span>').join('')+'</div>':'')+
+    (lg&&lg.note?'<div class="small">'+h(lg.note)+'</div>':'')+'</div>';}).join('');
+  const att=(s.attendance||[]).map(id=>S.players.find(p=>p.id===id)).filter(Boolean);
+  openSheet('<h2>'+h(s.name)+'</h2><div class="muted small">'+fmtDate(s.date)+' · '+att.length+' närvarande'+(s.startedAt&&s.finishedAt?' · '+Math.round((s.finishedAt-s.startedAt)/60000)+' min total tid':'')+'</div>'+
+    '<div class="field"><label>Sammanfattning av passet</label><textarea id="s-sum" placeholder="Helhetsintryck, vad tar vi med till nästa gång?">'+h(s.summary||'')+'</textarea></div>'+
+    '<div class="stack">'+rows+'</div>'+
+    (att.length?'<div class="label">Närvarande</div><div class="chips">'+att.map(p=>'<span class="chip">'+h(p.name)+'</span>').join('')+'</div>':'')+
+    '<button class="btn primary" id="s-close">Spara och stäng</button>',
+    sh=>{$('#s-close',sh).onclick=()=>{s.summary=$('#s-sum',sh).value.trim();save();closeSheet();render();};});
+}
+function sheetDrillStats(d){
+  const runs=[];S.sessions.filter(s=>s.status==='done').forEach(s=>s.items.forEach(it=>{if(it.drillId===d.id&&s.log&&s.log[it.id])runs.push({s,it,lg:s.log[it.id]});}));
+  openSheet('<span class="chip ph-'+d.phase+'">'+PH[d.phase].name+'</span><h2>'+h(d.name)+'</h2><div class="stack">'+runs.sort((a,b)=>(b.s.date||'').localeCompare(a.s.date||'')).map(({s,it,lg})=>'<div class="drow"><div class="top"><div class="name">'+fmtDate(s.date)+'<span class="hint">'+h(s.name)+' · '+it.dur+' min'+(lg.actual?' → '+lg.actual.toLocaleString('sv-SE')+' min':'')+'</span></div><span class="num" style="font-size:22px;font-weight:700">'+(lg.rating||'–')+'</span></div>'+(Object.keys(lg.counters||{}).length?'<div class="chips">'+Object.entries(lg.counters).map(([k,v])=>'<span class="chip">'+h(k)+' <b>'+v+'</b></span>').join('')+'</div>':'')+(lg.note?'<div class="small">'+h(lg.note)+'</div>':'')+'</div>').join('')+'</div><button class="btn" data-act="closeSheet">Stäng</button>');
+}
+function sheetTemplate(){
+  openSheet('<h2>Skapa pass från mall</h2><p class="muted small" style="margin:0">Mallen väljer en typisk uppsättning övningar från banken och fördelar tiden 15 / 40 / 35 / 10 % mellan faserna.</p>'+
+    '<div class="field"><label>Istid (min)</label><input type="number" inputmode="numeric" id="t-ice" value="'+S.settings.defaultIce+'" min="10" max="180"></div>'+
+    '<div class="field"><label>Inriktning</label><div class="seg" id="t-focus"><button type="button" data-f="mix" class="on">Blandat</button><button type="button" data-f="tech">Teknik</button><button type="button" data-f="game">Spel</button></div></div>'+
+    '<div class="grid2"><button class="btn" data-act="closeSheet">Avbryt</button><button class="btn primary" id="t-go">Skapa</button></div>',
+    sh=>{let focus='mix';$$('#t-focus button',sh).forEach(b=>b.onclick=()=>{focus=b.dataset.f;$$('#t-focus button',sh).forEach(x=>x.classList.toggle('on',x===b));});
+      $('#t-go',sh).onclick=()=>{
+        const ice=Math.max(10,parseInt($('#t-ice',sh).value)||60);
+        const counts={warm:2,tech:focus==='tech'?3:2,game:focus==='game'?3:2,cool:1};
+        const rnd=mulberry(Date.now()&0xffff);
+        const items=[];
+        PHASES.forEach(p=>{const pool=S.drills.filter(d=>d.phase===p.id).slice().sort(()=>rnd()-.5).slice(0,counts[p.id]);pool.forEach(d=>items.push({id:uid(),drillId:d.id,dur:d.dur,note:''}));});
+        const names={mix:'Träning – blandat',tech:'Träning – teknikfokus',game:'Träning – spelfokus'};
+        const ns={id:uid(),name:names[focus],date:todayISO(),iceTime:ice,groupsCount:S.settings.groupsCount,status:'plan',items,log:{},attendance:[]};
+        fitToIce(ns);S.sessions.push(ns);save();closeSheet();go('session',{id:ns.id});toast('Pass skapat från mall');
+      };});
+}
+function sheetExport(){
+  const json=JSON.stringify(S);
+  openSheet('<h2>Exportera data</h2><p class="muted small" style="margin:0">Kopiera texten och spara den, eller klistra in den under Importera på en annan enhet.</p><textarea id="x-txt" readonly style="min-height:160px;font-size:12px">'+h(json)+'</textarea><div class="grid2"><button class="btn" data-act="closeSheet">Stäng</button><button class="btn primary" id="x-copy">Kopiera</button></div>',
+    sh=>{$('#x-copy',sh).onclick=()=>{const t=$('#x-txt',sh);t.select();try{navigator.clipboard.writeText(json).then(()=>toast('Kopierat'),()=>{document.execCommand('copy');toast('Kopierat');});}catch(e){document.execCommand('copy');toast('Kopierat');}};});
+}
+function sheetImport(){
+  openSheet('<h2>Importera data</h2><p class="muted small" style="margin:0">Klistra in en tidigare export. Ersätter allt som finns nu.</p><textarea id="m-txt" style="min-height:160px;font-size:12px"></textarea><div class="grid2"><button class="btn" data-act="closeSheet">Avbryt</button><button class="btn primary" id="m-go">Importera</button></div>',
+    sh=>{$('#m-go',sh).onclick=()=>{try{const o=JSON.parse($('#m-txt',sh).value);if(!o.drills||!o.players||!o.sessions)throw 0;S=o;S.settings=S.settings||{groupsCount:2,defaultIce:60,seed:1};save();closeSheet();go('sessions');toast('Data importerad');}catch(e){toast('Kunde inte läsa texten – är det en export från Isplan?');}};});
+}
+
+/* ---------- time allocation ---------- */
+function fitToIce(s){
+  const tot=totalMin(s);if(!tot||!s.items.length)return;
+  const f=s.iceTime/tot;
+  s.items.forEach(it=>{it.dur=Math.max(1,Math.round(it.dur*f));});
+  let diff=s.iceTime-totalMin(s);
+  // hand the rounding remainder to the longest items so proportions hold
+  const order=s.items.slice().sort((a,b)=>b.dur-a.dur);
+  let i=0;while(diff!==0&&order.length){const it=order[i%order.length];if(diff>0){it.dur++;diff--;}else if(it.dur>1){it.dur--;diff++;}i++;if(i>500)break;}
+}
+
+/* ---------- event binding ---------- */
+function bind(root){
+  root.onclick=e=>{
+    const el=e.target.closest('[data-go],[data-act]');if(!el)return;
+    if(el.dataset.go){go(el.dataset.go,el.dataset.id?{id:el.dataset.id}:null);return;}
+    act(el.dataset.act,el);
+  };
+  const ln=$('#ln',root);if(ln)ln.oninput=()=>{const s=session(view.id);const lg=ensureLog(s,s.items[live.idx]);lg.note=ln.value;save();};
+  const di=$('#defIce',root);if(di)di.onchange=()=>{S.settings.defaultIce=Math.max(15,parseInt(di.value)||60);save();toast('Sparat');};
+  $('#overlay').onclick=e=>{const el=e.target.closest('[data-act]');if(el)act(el.dataset.act,el);};
+}
+function act(a,el){
+  const s=view.id?session(view.id):null;
+  const idx=el.dataset.idx!=null?parseInt(el.dataset.idx):null;
+  const dd=el.dataset.d!=null?parseInt(el.dataset.d):0;
+  switch(a){
+    case 'closeSheet':closeSheet();break;
+    case 'hideBanner':S.settings.exampleBanner=false;save();render();break;
+    case 'newSession':sheetSession(null);break;
+    case 'newFromTemplate':sheetTemplate();break;
+    case 'editSession':sheetSession(s);break;
+    case 'dur':{const it=s.items[idx];it.dur=Math.max(1,Math.min(90,it.dur+dd));save();render();break;}
+    case 'move':{const it=s.items[idx];const d=drill(it.drillId);
+      // move within same phase only
+      const same=s.items.map((x,i)=>({x,i})).filter(o=>{const q=drill(o.x.drillId);return q&&q.phase===d.phase;});
+      const pos=same.findIndex(o=>o.i===idx);const tgt=same[pos+dd];if(!tgt)break;
+      s.items[idx]=tgt.x;s.items[tgt.i]=it;save();render();break;}
+    case 'removeItem':s.items.splice(idx,1);save();render();break;
+    case 'itemNote':sheetItemNote(s,idx);break;
+    case 'addDrill':sheetAddDrill(s,el.dataset.phase);break;
+    case 'drillInfo':sheetDrillInfo(drill(el.dataset.id));break;
+    case 'fitTime':fitToIce(s);save();render();toast('Tiderna anpassade till '+s.iceTime+' min');break;
+    case 'groupsCount':s.groupsCount=Math.max(1,Math.min(6,(s.groupsCount||2)+dd));S.settings.groupsCount=s.groupsCount;save();render();break;
+    case 'gc2':S.settings.groupsCount=Math.max(1,Math.min(6,S.settings.groupsCount+dd));save();render();break;
+    case 'reshuffle':S.settings.seed=(S.settings.seed||1)+1;save();render();break;
+    case 'duplicate':{const ns={id:uid(),name:s.name+' (kopia)',date:todayISO(),iceTime:s.iceTime,groupsCount:s.groupsCount,status:'plan',items:s.items.map(i=>({id:uid(),drillId:i.drillId,dur:i.dur,note:i.note})),log:{},attendance:[]};S.sessions.push(ns);save();go('session',{id:ns.id});toast('Kopia skapad');break;}
+    case 'deleteSession':if(confirm('Ta bort passet "'+s.name+'"?')){S.sessions=S.sessions.filter(x=>x.id!==s.id);save();go('sessions');}break;
+    case 'reopen':s.status='plan';save();render();break;
+    case 'viewLog':sheetLog(s);break;
+    case 'viewLogOf':sheetLog(session(el.dataset.id));break;
+    case 'drillStats':sheetDrillStats(drill(el.dataset.id));break;
+    case 'startLive':{s.attendance=presentPlayers().map(p=>p.id);s.startedAt=s.startedAt||Date.now();if(!s.log)s.log={};
+      live.idx=0;view={name:'live',id:s.id};save();render();break;}
+    case 'exitLive':{livePause(s);stopLive();toast('Pausat – passet finns kvar under Pass');go('session',{id:s.id});break;}
+    case 'toggle':{if(live.running){livePause(s);}else liveStart(s);render();break;}
+    case 'prev':case 'next':{livePause(s);const was=live.running;stopLive();
+      if(a==='next'&&live.idx===s.items.length-1){act('finish',el);break;}
+      live.idx=Math.max(0,Math.min(s.items.length-1,live.idx+(a==='next'?1:-1)));
+      if(a==='next'){liveStart(s);}
+      render();break;}
+    case 'rate':{const lg=ensureLog(s,s.items[live.idx]);lg.rating=parseInt(el.dataset.r);save();render();break;}
+    case 'cnt':{const lg=ensureLog(s,s.items[live.idx]);const k=el.dataset.k;lg.counters[k]=Math.max(0,(lg.counters[k]||0)+dd);save();render();break;}
+    case 'finish':{livePause(s);stopLive();s.status='done';s.finishedAt=Date.now();save();go('session',{id:s.id});sheetLog(s);break;}
+    case 'filter':drillFilter=el.dataset.f;render();break;
+    case 'newDrill':sheetDrill(null);break;
+    case 'editDrill':sheetDrill(drill(el.dataset.id));break;
+    case 'newPlayer':sheetPlayer(null);break;
+    case 'editPlayer':sheetPlayer(S.players.find(p=>p.id===el.dataset.id));break;
+    case 'present':{const p=S.players.find(x=>x.id===el.dataset.id);p.present=!p.present;save();render();break;}
+    case 'allPresent':S.players.forEach(p=>p.present=true);save();render();break;
+    case 'nonePresent':S.players.forEach(p=>p.present=false);save();render();break;
+    case 'export':sheetExport();break;
+    case 'import':sheetImport();break;
+    case 'resetSeed':if(confirm('Ersätta all data med exempeldatan?')){S=fresh();save();go('sessions');}break;
+    case 'wipe':if(confirm('Rensa alla övningar, spelare och pass?')){S={drills:[],players:[],sessions:[],settings:{groupsCount:2,defaultIce:60,seed:1,exampleBanner:false}};save();go('sessions');}break;
+  }
+}
+
+/* ---------- boot ---------- */
+load();
+render();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&view.name==='live'&&live.running&&navigator.wakeLock&&!live.wake){navigator.wakeLock.request('screen').then(w=>{live.wake=w;}).catch(()=>{});}});
+})();
+</script>
+</body>
+</html>
