@@ -8,10 +8,18 @@ Testapp i en enda HTML-fil för utvärdering i mobilen. Ingen server, inga beroe
 
 **Dela som fil:** skicka `index.html` via mejl, AirDrop, Messenger eller liknande. Mottagaren öppnar den i webbläsaren och kan lägga till den på hemskärmen.
 
-**Dela som webbadress (GitHub Pages):**
+**Demo över eget Wi-Fi (gratis, inget konto):**
+```
+python3 demo-server.py
+```
+Skriptet skriver ut en adress i stil med `http://192.168.1.23:8000/`. Öppna den i telefonen, som måste vara på samma nätverk som datorn. Fungerar på iPhone och Android.
+
+**Dela som webbadress (GitHub Pages):** gratis för publika repon, kräver betald plan för privata.
 1. Slå ihop branchen till `main`.
 2. Gå till repots *Settings → Pages* och välj *Source: GitHub Actions*.
 3. Arbetsflödet `.github/workflows/pages.yml` publicerar sidan vid varje push till `main`. Adressen blir `https://<användare>.github.io/<repo>/`.
+
+**Andra gratisalternativ:** Cloudflare Pages, Netlify eller Vercel – ladda upp `index.html` i deras webbgränssnitt.
 
 Exempeldata (övningar, spelare, två pass) laddas första gången så att allt går att prova direkt. Rensa eller återställ under **Statistik → Inställningar**.
 
