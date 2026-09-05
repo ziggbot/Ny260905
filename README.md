@@ -4,8 +4,14 @@ Testapp i en enda HTML-fil för utvärdering i mobilen. Ingen server, inga beroe
 
 ## Testa i mobilen
 
-1. Öppna `index.html` i telefonens webbläsare (skicka filen till dig själv, eller lägg den på valfri webbserver / GitHub Pages).
-2. Lägg gärna till sidan på hemskärmen – den fungerar offline efter första laddningen (typsnitten hämtas från Google Fonts, resten ligger i filen).
+`index.html` är helt fristående – typsnitt, stilar och kod ligger i filen och den fungerar utan internet.
+
+**Dela som fil:** skicka `index.html` via mejl, AirDrop, Messenger eller liknande. Mottagaren öppnar den i webbläsaren och kan lägga till den på hemskärmen.
+
+**Dela som webbadress (GitHub Pages):**
+1. Slå ihop branchen till `main`.
+2. Gå till repots *Settings → Pages* och välj *Source: GitHub Actions*.
+3. Arbetsflödet `.github/workflows/pages.yml` publicerar sidan vid varje push till `main`. Adressen blir `https://<användare>.github.io/<repo>/`.
 
 Exempeldata (övningar, spelare, två pass) laddas första gången så att allt går att prova direkt. Rensa eller återställ under **Statistik → Inställningar**.
 
